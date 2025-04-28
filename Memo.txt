@@ -22,4 +22,3 @@ docker run -p 3000:3000 -d my-nextjs-image
 　確認URL
 ==============*/
 http://localhost:3000
-

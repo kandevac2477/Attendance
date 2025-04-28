@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+/*
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -98,6 +98,57 @@ export default function Home() {
           Go to nextjs.org →
         </a>
       </footer>
+    </div>
+  );
+}*/
+
+'use client';
+
+import { useNavigationContext } from '@/contexts/NavigationContext';
+import TimeClock from '@/components/TimeClock';
+import AttendanceRequests from '@/components/AttendanceRequests';
+import ShiftManagement from '@/components/ShiftManagement';
+
+export default function Home() {
+  const { activeTab } = useNavigationContext();
+  
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'timeclock':
+        return <TimeClock />;
+      case 'requests':
+        return <AttendanceRequests />;
+      case 'shifts':
+        return <ShiftManagement />;
+      case 'reports':
+        return (
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">勤怠レポート</h2>
+            <p className="text-gray-600">この機能は開発中です</p>
+          </div>
+        );
+      case 'employees':
+        return (
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">従業員管理</h2>
+            <p className="text-gray-600">この機能は開発中です</p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">設定</h2>
+            <p className="text-gray-600">この機能は開発中です</p>
+          </div>
+        );
+      default:
+        return <TimeClock />;
+    }
+  };
+  
+  return (
+    <div className="space-y-6">
+      {renderContent()}
     </div>
   );
 }

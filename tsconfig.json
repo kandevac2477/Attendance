@@ -22,6 +22,12 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", 
+              "**/*.ts", 
+              "**/*.tsx", 
+              ".next/types/**/*.ts",
+              "**/*.js",               // JavaScriptファイルも含むように明示的に記述
+              "lib/**/*"               // libフォルダ以下をすべて含む
+             ],
   "exclude": ["node_modules"]
 }

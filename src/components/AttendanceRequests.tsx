@@ -1,234 +1,221 @@
+/*==============================
+勤怠修正・申請画面に表示される内容のコンポーネント
+==============================*/
+
 import React, { useState } from 'react';
-import { Calendar, Clock, FileEdit, FileCheck, FilePlus } from 'lucide-react';
+import { Calendar, Clock, FileEdit, FileCheck, FilePlus, Edit, Repeat, Briefcase, Home } from 'lucide-react';
 
-interface RequestFormProps {
-  onClose: () => void;
-  onSubmit: (data: RequestData) => void;
-}
 
-interface RequestData {
-  type: string;
-  date: string;
-  startTime?: string;
-  endTime?: string;
-  reason: string;
-}
-
-const RequestForm: React.FC<RequestFormProps> = ({ onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<RequestData>({
-    type: '修正',
-    date: new Date().toISOString().split('T')[0],
-    startTime: '',
-    endTime: '',
-    reason: ''
-  });
+export default function RequestPage() {
+  // Array of request types
+  const requestTypes = [
+    {
+      id: 'leave',
+      title: '休暇申請',
+      description: '有給休暇、特別休暇、欠勤などの申請',
+      href: '/request/leave',
+      icon: <Calendar className="h-6 w-6" />
+    },
+    {
+      id: 'overtime',
+      title: '残業申請',
+      description: '所定労働時間を超える勤務の事前申請',
+      href: '/request/overtime',
+      icon: <Clock className="h-6 w-6" />
+    },
+    {
+      id: 'correction',
+      title: '勤怠修正',
+      description: '打刻忘れや修正が必要な勤怠記録の申請',
+      href: '/request/correction',
+      icon: <Edit className="h-6 w-6" />
+    },
+    {
+      id: 'shift_change',
+      title: 'シフト変更',
+      description: '既存シフトの変更や交代の申請',
+      href: '/request/shift',
+      icon: <Repeat className="h-6 w-6" />
+    },
+    {
+      id: 'business_trip',
+      title: '出張申請',
+      description: '出張予定と経費の事前申請',
+      href: '/request/business-trip',
+      icon: <Briefcase className="h-6 w-6" />
+    },
+    {
+      id: 'remote_work',
+      title: 'リモートワーク',
+      description: '自宅やオフィス以外での勤務申請',
+      href: '/request/remote-work',
+      icon: <Home className="h-6 w-6" />
+    }
+  ];
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-    onClose();
-  };
-  
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">勤怠申請フォーム</h3>
-          <button 
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">申請タイプ</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              required
-            >
-              <option value="修正">勤怠修正</option>
-              <option value="休暇">休暇申請</option>
-              <option value="残業">残業申請</option>
-            </select>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">日付</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-          
-          {formData.type !== '休暇' && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-gray-700 mb-2">開始時間</label>
-                <input
-                  type="time"
-                  name="startTime"
-                  value={formData.startTime}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">終了時間</label>
-                <input
-                  type="time"
-                  name="endTime"
-                  value={formData.endTime}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  required
-                />
-              </div>
-            </div>
-          )}
-          
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">理由</label>
-            <textarea
-              name="reason"
-              value={formData.reason}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md h-24"
-              required
-            ></textarea>
-          </div>
-          
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800"
-            >
-              申請する
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const AttendanceRequests: React.FC = () => {
-  const [showForm, setShowForm] = useState(false);
-  const [requests, setRequests] = useState<(RequestData & { id: number, status: string })[]>([
+  // Array of recent requests for the history section
+  const recentRequests = [
     {
       id: 1,
-      type: '修正',
-      date: '2025-04-15',
-      startTime: '09:30',
-      endTime: '18:30',
-      reason: '社内システムの不具合で打刻できませんでした。',
-      status: '承認待ち'
+      type: '有給休暇',
+      date: '2025-04-14',
+      requestDate: '2025-04-20',
+      status: 'pending',
+      approver: '田中 部長'
     },
     {
       id: 2,
-      type: '休暇',
-      date: '2025-04-20',
-      reason: '私用のため',
-      status: '承認済み'
+      type: '勤怠修正',
+      date: '2025-04-13',
+      requestDate: '2025-04-12',
+      status: 'approved',
+      approver: '田中 部長'
+    },
+    {
+      id: 3,
+      type: 'シフト変更',
+      date: '2025-04-12',
+      requestDate: '2025-04-18',
+      status: 'rejected',
+      approver: '田中 部長'
+    },
+    {
+      id: 4,
+      type: '残業申請',
+      date: '2025-04-10',
+      requestDate: '2025-04-10',
+      status: 'approved',
+      approver: '田中 部長'
     }
-  ]);
+  ];
   
-  const handleSubmitRequest = (data: RequestData) => {
-    const newRequest = {
-      ...data,
-      id: requests.length + 1,
-      status: '承認待ち'
-    };
-    setRequests([...requests, newRequest]);
+  // Function to format date strings
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', {
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+  
+  // Function to get status badge
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-chart-4/10 text-chart-4 border border-chart-4/20">
+            保留中
+          </span>
+        );
+      case 'approved':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-chart-1/10 text-chart-1 border border-chart-1/20">
+            承認済
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-chart-5/10 text-chart-5 border border-chart-5/20">
+            却下
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
+            {status}
+          </span>
+        );
+    }
   };
   
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <FileEdit size={24} className="text-gray-900 mr-3" />
-          <h2 className="text-xl font-semibold text-gray-900">勤怠申請</h2>
-        </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-        >
-          <FilePlus size={18} className="mr-1" />
-          <span>新規申請</span>
-        </button>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl font-semibold mb-6">申請メニュー</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {requestTypes.map((type) => (
+          <a
+            key={type.id}
+            href={type.href}
+            className="block p-6 rounded-lg border border-border bg-card text-card-foreground hover:shadow-md transition-all"
+          >
+            <div className="flex items-start">
+              <div className="mr-4 p-2 rounded-md bg-muted">
+                {type.icon}
+              </div>
+              <div>
+                <h2 className="text-lg font-medium">{type.title}</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {type.description}
+                </p>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
       
-      {requests.length > 0 ? (
+      <h2 className="text-xl font-semibold mt-10 mb-4">最近の申請履歴</h2>
+      
+      <div className="rounded-lg border border-border bg-card text-card-foreground shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日付</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイプ</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">理由</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="px-4 py-3 text-left text-sm font-medium">申請種類</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">申請日</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">対象日</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">承認者</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">状態</th>
+                <th className="px-4 py-3 text-left text-sm font-medium"></th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {requests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.type}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {request.startTime && request.endTime 
-                      ? `${request.startTime} - ${request.endTime}` 
-                      : '-'}
+            <tbody className="divide-y divide-border">
+              {recentRequests.map((request) => (
+                <tr 
+                  key={request.id}
+                  className="hover:bg-muted/40 transition-colors"
+                >
+                  <td className="px-4 py-4 text-sm font-medium">
+                    {request.type}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">{request.reason}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      request.status === '承認済み' 
-                        ? 'bg-gray-200 text-gray-800' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {request.status}
-                    </span>
+                  <td className="px-4 py-4 text-sm">
+                    {formatDate(request.date)}
+                  </td>
+                  <td className="px-4 py-4 text-sm">
+                    {formatDate(request.requestDate)}
+                  </td>
+                  <td className="px-4 py-4 text-sm">
+                    {request.approver}
+                  </td>
+                  <td className="px-4 py-4 text-sm">
+                    {getStatusBadge(request.status)}
+                  </td>
+                  <td className="px-4 py-4 text-sm">
+                    <div className="flex space-x-2">
+                      <button className="text-muted-foreground hover:text-foreground transition-colors">
+                        詳細
+                      </button>
+                      {request.status === 'pending' && (
+                        <button className="text-chart-5 hover:text-chart-5/80 transition-colors">
+                          取消
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      ) : (
-        <div className="text-center py-8">
-          <FileCheck size={36} className="mx-auto text-gray-400 mb-3" />
-          <p className="text-gray-500">申請はありません</p>
+        
+        <div className="p-4 border-t border-border bg-muted/30 flex justify-center">
+          <a href="/request/history" className="text-sm font-medium hover:underline">
+            すべての申請履歴を表示
+          </a>
         </div>
-      )}
-      
-      {showForm && (
-        <RequestForm onClose={() => setShowForm(false)} onSubmit={handleSubmitRequest} />
-      )}
+      </div>
     </div>
   );
-};
+}
 
-export default AttendanceRequests;
+//export default AttendanceRequests;

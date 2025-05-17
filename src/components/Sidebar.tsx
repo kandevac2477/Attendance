@@ -1,3 +1,7 @@
+/*===================================
+ハンバーガーメニューの表示のコンポーネント
+====================================*/
+
 'use client';
 
 import React from 'react';
@@ -73,9 +77,10 @@ const Sidebar: React.FC = () => {
             isActive={activeTab === 'shifts'} 
             onClick={() => setActiveTab('shifts')}
           />
-          <NavItem 
+          {/*  
+            <NavItem 
             icon={<BarChart2 size={20} />} 
-            label="勤怠レポート" 
+            label="勤怠レポート(ホーム画面に移動)" 
             isActive={activeTab === 'reports'} 
             onClick={() => setActiveTab('reports')}
           />
@@ -85,6 +90,7 @@ const Sidebar: React.FC = () => {
             isActive={activeTab === 'employees'} 
             onClick={() => setActiveTab('employees')}
           />
+          */}
           <NavItem 
             icon={<Settings size={20} />} 
             label="設定" 

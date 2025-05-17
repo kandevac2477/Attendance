@@ -33,6 +33,7 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env.local #DB予備出し設定のため追記
 
 # vercel
 .vercel

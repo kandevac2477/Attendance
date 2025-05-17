@@ -23,10 +23,13 @@ export default function Home() {
             <TimeClock />
             <div className="max-w-3/4 mx-auto px-4">
               <Dashboard />
-            </div>
+            </div>            
+            {/* DBtests.jsを呼び出し(Test用)*/} 
+            {/* 
             <div className="max-w-3/4 mx-auto px-4">
             <DBTests />
             </div>
+            */}
           </div>
         );
       case 'requests':

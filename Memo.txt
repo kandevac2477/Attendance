@@ -19,6 +19,16 @@ docker rm 0bbe53872678
 docker run -p 3000:3000 -d my-nextjs-image
 
 /*==============
+　コミット・プッシュ
+==============*/
+--コミット("この中にコミットメッセージ記載")
+git commit -m ""
+
+--プッシュ
+git push origin main
+
+/*==============
 　確認URL
 ==============*/
 http://localhost:3000
+

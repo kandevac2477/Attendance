@@ -1,3 +1,7 @@
+/*===================================
+勤怠打刻のコンポーネント
+====================================*/
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -46,7 +50,7 @@ const TimeClock: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
       <div className="flex items-center justify-center mb-6">
         <Clock size={28} className="text-gray-900 mr-3" />
-        <h2 className="text-2xl font-semibold text-gray-900">タイムクロック</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">勤怠打刻</h2>
       </div>
       
       <div className="text-center mb-8">
@@ -97,5 +101,7 @@ const TimeClock: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default TimeClock;

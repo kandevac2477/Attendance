@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type TabType = 'timeclock' | 'requests' | 'shifts' | 'reports' | 'employees' | 'settings';
+type TabType = 'timeclock' | 'requests' | 'shifts' | 'reports' | 'employees' | 'settings' | 'correction';
 
 interface NavigationContextType {
   isOpen: boolean;

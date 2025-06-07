@@ -1,8 +1,12 @@
 /*==============================
 勤怠修正・申請画面に表示される内容のコンポーネント
+呼んでるファイル：
 ==============================*/
 
 import React, { useState } from 'react';
+// import　Next.Link
+import Link from 'next/link'
+import { useRouter } from 'next/router'; // next/routerからuseRouterをインポート
 import { Calendar, Clock, FileEdit, FileCheck, FilePlus, Edit, Repeat, Briefcase, Home } from 'lucide-react';
 
 
@@ -97,6 +101,12 @@ export default function RequestPage() {
       day: 'numeric'
     });
   };
+
+  // クリックしたら、そのページに遷移する
+  /*const router = useRouter(); // useRouterフックを呼び出してルーターインスタンスを取得
+  const handleClick = () => {
+    router.push('/request/correction');
+  };*/
   
   // Function to get status badge
   const getStatusBadge = (status: string) => {
@@ -133,8 +143,9 @@ export default function RequestPage() {
       <h1 className="text-2xl font-semibold mb-6">申請メニュー</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 変数定義上でしてる　'requestTypes'　map((type) =>は配列を繰り返してる */}
         {requestTypes.map((type) => (
-          <a
+          <Link
             key={type.id}
             href={type.href}
             className="block p-6 rounded-lg border border-border bg-card text-card-foreground hover:shadow-md transition-all"
@@ -150,7 +161,7 @@ export default function RequestPage() {
                 </p>
               </div>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
       
@@ -218,4 +229,4 @@ export default function RequestPage() {
   );
 }
 
-//export default AttendanceRequests;
+// export default RequestPage;

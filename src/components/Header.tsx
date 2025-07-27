@@ -1,5 +1,5 @@
 /*=======================================
-ヘッダーのコンポーネント
+ ヘッダーのコンポーネント
 =======================================*/
 
 'use client';
@@ -7,9 +7,18 @@
 import React from 'react';
 import { Clock, Menu, Bell, User } from 'lucide-react';
 import { useNavigationContext } from '@/contexts/NavigationContext';
+import { useRouter } from 'next/navigation'; // next/navigation から useRouter をインポート
+import Link from 'next/link'
+
 
 const Header: React.FC = () => {
   const { toggleSidebar } = useNavigationContext();
+
+  const router = useRouter(); // useRouterフックを使用
+  const handleButtonClick = () => {
+    // クリック時に/dashboardに遷移
+    router.push('/');
+};
   
   return (
     <header className="bg-white border-b border-gray-200 fixed w-full z-10">
@@ -24,7 +33,11 @@ const Header: React.FC = () => {
           </button>
           <div className="flex items-center">
             <Clock size={22} className="text-gray-900 mr-2" />
-            <h1 className="text-xl font-semibold text-gray-900">勤怠管理システム</h1>
+            <Link href = '/'>
+            <h1 className="text-xl font-semibold text-gray-900" onClick={handleButtonClick}>
+              勤怠管理システム
+            </h1>
+            </Link>
           </div>
         </div>
         

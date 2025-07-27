@@ -16,12 +16,12 @@ interface DynamicButtonProps {
     href: string;
   }
 
-export default function LeaveRequest({ id, text, href }:DynamicButtonProps) {
-   /* const router = useRouter(); // useRouterフックを使用
+export default function LeaveRequest({ id,text, href }:DynamicButtonProps) {
+    const router = useRouter(); // useRouterフックを使用
     const handleButtonClick = () => {
         // クリック時に/dashboardに遷移
         router.push('/request/leave/annualsalary');
-    };*/
+    };
 
   return (
     <Link href= {href}>

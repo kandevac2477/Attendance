@@ -3,10 +3,11 @@
 呼んでるファイル：
 ==============================*/
 
+'use client'; // これがあることを確認！
 import React, { useState } from 'react';
 // import　Next.Link
 import Link from 'next/link'
-import { useRouter } from 'next/router'; // next/routerからuseRouterをインポート
+// import { useRouter } from 'next/router'; // next/routerからuseRouterをインポート
 import { Calendar, Clock, FileEdit, FileCheck, FilePlus, Edit, Repeat, Briefcase, Home } from 'lucide-react';
 
 
@@ -148,6 +149,10 @@ export default function RequestPage() {
           <Link
             key={type.id}
             href={type.href}
+            // クリックイベントのデバッグを追加
+            onClick={() => {
+              console.log(`Clicked ${type.title} link. Navigating to: ${type.href}`);
+            }}
             className="block p-6 rounded-lg border border-border bg-card text-card-foreground hover:shadow-md transition-all"
           >
             <div className="flex items-start">
@@ -228,5 +233,3 @@ export default function RequestPage() {
     </div>
   );
 }
-
-// export default RequestPage;

@@ -47,7 +47,7 @@ const TimeClock: React.FC = () => {
   };
   
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
+    <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto my-16">
       <div className="flex items-center justify-center mb-6">
         <Clock size={28} className="text-gray-900 mr-3" />
         <h2 className="text-2xl font-semibold text-gray-900">勤怠打刻</h2>

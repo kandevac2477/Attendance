@@ -1,15 +1,18 @@
 // pages/index.js
 import { useEffect, useState } from 'react';
-import { supabase } from '../app/lib/supabaseClient';
+import { supabase } from '@/app/lib/supabaseClient';
 import { PostgrestError } from '@supabase/supabase-js'; // 型定義
 import { formatDate } from 'date-fns';
 // Next.js App Routerでのクライアントコンポーネント用Supabaseクライアント
 import { createBrowserClient } from '@supabase/ssr';
-import { AttendanceRecord } from '../app/lib/types';
+import { AttendanceRecord } from '@/app/lib/types';
 
-// // Supabaseクライアントの初期化
-// // このクライアントは、`@supabase/ssr`が提供する認証情報を自動的に使用します
-// const supabaseGet = createBrowserClient<Database>();
+// Supabaseクライアントの初期化
+// このクライアントは、`@supabase/ssr`が提供する認証情報を自動的に使用します
+const supabaseGet = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // export default function DBTests() {
 //     const [data, setData] = useState<Array<{ id: number; firstName: string }> | null>(null);
@@ -80,13 +83,6 @@ import { AttendanceRecord } from '../app/lib/types';
 
 //     return (<p>データがありません。</p>)
 // }
-
-// Supabaseクライアントの初期化
-// このクライアントは、`@supabase/ssr`が提供する認証情報を自動的に使用します
-const supabaseGet = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 // データ登録を行うReactコンポーネント
 export default function PostCreator() {

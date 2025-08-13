@@ -2,44 +2,71 @@
 // このファイルはNext.jsのRoute Handlerとして機能します。
 
 import { NextResponse } from 'next/server';
-import prisma from '../../lib/prisma'; // lib/prisma.ts へのエイリアスパス、または相対パス
-import { supabase, supabaseAdmin } from '../../lib/supabaseClient';
-import { User, ApiResponse } from '../../lib/types';
+import prisma from '@/app/lib/prisma';
+import { supabase, supabaseAdmin } from '@/app/lib/supabaseClient';
+import { User, UserWithoutPassword, ApiResponse } from '@/app/lib/types';
 import { NextRequest } from 'next/server';
+import { getAuthUser } from '@/app/lib/auth';
 
-// GETリクエストのハンドラー
+// GETリクエストのハンドラー - 管理者のみアクセス可能
 export async function GET(request: NextRequest) {
     try {
-        console.log('ユーザー取得APIが呼び出されました');
-        
+        // 認証チェック（開発中は一時的にコメントアウト）
+        // const authUser = getAuthUser(request);
+        // if (!authUser) {
+        //     return NextResponse.json<ApiResponse<UserWithoutPassword[]>>({
+        //         data: null,
+        //         error: '認証が必要です'
+        //     }, { status: 401 });
+        // }
+
+        // 管理者権限チェック（必要に応じて実装）
+        // if (!isAdmin(authUser)) {
+        //     return NextResponse.json<ApiResponse<User[]>>({
+        //         data: null,
+        //         error: 'アクセス権限がありません'
+        //     }, { status: 403 });
+        // }
+
         // クライアント解決（Service Roleがあれば優先）
         const client = (supabaseAdmin ?? supabase);
         if (!client) {
             console.error('Supabase環境変数が設定されていません');
-            return NextResponse.json<ApiResponse<User[]>>({
+            return NextResponse.json<ApiResponse<UserWithoutPassword[]>>({
                 data: null,
                 error: 'Supabase設定エラー（NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY を設定）'
             }, { status: 500 });
         }
 
-        const { data: users, error } = await client.from('User').select('*');
+        // パスワードを除外してユーザー情報を取得
+        const { data: users, error } = await client!.from('User').select(`
+            id,
+            email,
+            firstName,
+            lastName,
+            companyCode,
+            affiliationFlg,
+            joiningDate,
+            retirementDate,
+            createdDate
+        `);
     
         if (error) {
           console.error('Supabaseエラー:', error);
-          return NextResponse.json<ApiResponse<User[]>>({
+          return NextResponse.json<ApiResponse<UserWithoutPassword[]>>({
             data: null,
-            error: `ユーザー取得に失敗しました: ${error.message}`
+            error: `${error.message}`
           }, { status: 500 });
         }
     
         console.log('ユーザー取得成功:', users?.length || 0, '件');
-        return NextResponse.json<ApiResponse<User[]>>({
+        return NextResponse.json<ApiResponse<UserWithoutPassword[]>>({
           data: users || [],
           error: null
         });
       } catch (error) {
         console.error('予期しないエラー:', error);
-        return NextResponse.json<ApiResponse<User[]>>({
+        return NextResponse.json<ApiResponse<UserWithoutPassword[]>>({
           data: null,
           error: `内部サーバーエラー: ${error instanceof Error ? error.message : '不明なエラー'}`
         }, { status: 500 });

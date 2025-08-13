@@ -2,69 +2,31 @@
  ログイン画面のコンポーネント
 ===========================================*/
 'use client'
-import { useState, useEffect } from 'react';
-import { User, ApiResponse } from '../../app/lib/types'
+import { useState } from 'react';
 import { useRouter } from 'next/navigation'
 
 export default function Login (){
-    const [isEmail, setIsEmail] = useState('');
-    const [isPassword, setIsPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{email?: string; password?: string}>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [getEmail, setGetEmail] = useState('');
-    const [getPassword, setGetPassword] = useState('');    
-    const [users, setUsers] = useState<User[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
-    useEffect(() => {
-        fetchUsers()
-      }, [])
-
-      const fetchUsers = async () => {
-        try {
-          setLoading(true)
-          const response = await fetch('/api/users');
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const result: ApiResponse<User[]> = await response.json()
-
-          if (result.error) {
-            setError(result.error)
-          } else {
-            setUsers(result.data || [])
-            // 最初のユーザーの情報を設定（必要に応じて）
-            if (result.data && result.data.length > 0) {
-              setGetEmail(result.data[0].email)
-              setGetPassword(result.data[0].password)
-            }
-          }
-        } catch (err) {
-          setError('Failed to fetch users')
-        } finally {
-          setLoading(false)
-        }
-      }
-  
     // クライアント側バリデーション
     const validateForm = () => {
         const newErrors: {email?: string; password?: string} = {};
       
         // メールアドレスのバリデーション
-        if (!isEmail) {
+        if (!email) {
             newErrors.email = 'メールアドレスを入力してください';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(isEmail)) {
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             newErrors.email = '有効なメールアドレスを入力してください';
         }
       
         // パスワードのバリデーション
-        if (!isPassword) {
+        if (!password) {
             newErrors.password = 'パスワードを入力してください';
-        } else if (isPassword.length < 6) {
+        } else if (password.length < 6) {
             newErrors.password = 'パスワードは6文字以上で入力してください';
         }
       
@@ -72,6 +34,7 @@ export default function Login (){
         return Object.keys(newErrors).length === 0;
     };
 
+    // データベースでの認証
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
       
@@ -81,127 +44,94 @@ export default function Login (){
         }
       
         setIsSubmitting(true);
+        setErrors({});
       
         try {
-        // ここでサーバー側のログイン処理を実装
-        const fetchUsers = async () => {
-            try {
-              setLoading(true)
-              const response = await fetch('/api/users');
-              
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              
-              const result: ApiResponse<User[]> = await response.json()
-    
-              if (result.error) {
-                setError(result.error)
-              } else {
-                setUsers(result.data || [])
-                // 最初のユーザーの情報を設定（必要に応じて）
-                if (result.data && result.data.length > 0) {
-                  setGetEmail(result.data[0].email)
-                  setGetPassword(result.data[0].password)
-                }
-              }
-            } catch (err) {
-              setError('Failed to fetch users')
-            } finally {
-              setLoading(false)
-            }
-          }
-
-        if (isEmail === getEmail && isPassword === getPassword) {
-            router.push('/');
-        } else {
-            console.log('ログインしていません');
-            alert('ログインに失敗しました.メールアドレスまたはパスワードが間違っています.');
-        }
-
-        // 実際のAPIエンドポイントを呼び出す
-            const response = await fetch('/api/auth/login', {
+            // データベースでの認証
+            const response = await fetch('/api/auth/simple-login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ isEmail, isPassword }),
+                body: JSON.stringify({ email, password }),
             });
-        
-            if (!response.ok) {
+
+            if (response.ok) {
+                // const loginData = await response.json();
+                // console.log(loginData);
+                router.push('/');
+            } else {
                 const errorData = await response.json();
-                setErrors({ password: errorData.message || 'ログインに失敗しました' });
-                return;
+                setErrors({ 
+                    password: errorData.message || 'ログインに失敗しました' 
+                });
             }
         
-            // ログイン成功時の処理
-            alert('ログインに成功しました！');
-            // リダイレクト処理など
-        
-        } catch {
-            setErrors({ password: 'ネットワークエラーが発生しました' });
+        } catch (error) {
+            console.error('ログインエラー:', error);
+            setErrors({ password: 'ログインに失敗しました' });
         } finally {
             setIsSubmitting(false);
         }
     };
-
-    const handleClick = () => {
-        console.log('ログインボタンがクリックされました');
-        if (isEmail === getEmail && isPassword === getPassword) {
-            router.push('/')
-        } else {
-            console.log('ログインしていません');
-            alert('ログインに失敗しました.メールアドレスまたはパスワードが間違っています.');
-        }
-    }
   
     return (
-        <div className='mx-32 my-16 border rounded-2 text-center'>
-            <p className='m-8'>ログイン画面</p>
+        <div className='mx-auto max-w-md my-16 p-8 border rounded-lg shadow-lg bg-white'>
+            <h1 className='text-2xl font-bold text-center mb-8'>ログイン</h1>
+            
             <form onSubmit={handleSubmit}>
-                <div className='m-4'>
-                    <label className='flex flex-col'>
+                <div className='mb-4'>
+                    <label className='block text-sm font-medium text-gray-700 mb-2'>
                         メールアドレス
-                        <input
-                            type="email"
-                            value={isEmail}
-                            onChange={e => {
-                                setIsEmail(e.target.value);
-                                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
-                            }}
-                            required
-                            className={`w-96 border mx-auto ${errors.email ? 'border-red-500' : ''}`}
-                            disabled={isSubmitting}
-                        />
                     </label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={e => {
+                            setEmail(e.target.value);
+                            if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                        }}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        disabled={isSubmitting}
+                        placeholder="メールアドレスを入力"
+                    />
                     {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                        <p className="text-red-500 text-sm mt-1 whitespace-pre-line">{errors.email}</p>
                     )}
                 </div>
-                <div className='m-4'>
-                    <label className='flex flex-col'>
+
+                <div className='mb-6'>
+                    <label className='block text-sm font-medium text-gray-700 mb-2'>
                         パスワード
-                        <input
-                            type="password"
-                            value={isPassword}
-                            onChange={e => {
-                                setIsPassword(e.target.value);
-                                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
-                            }}
-                            required
-                            className={`w-96 border mx-auto ${errors.password ? 'border-red-500' : ''}`}
-                            disabled={isSubmitting}
-                        />
                     </label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={e => {
+                            setPassword(e.target.value);
+                            if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                        }}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.password ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        disabled={isSubmitting}
+                        placeholder="パスワードを入力"
+                    />
                     {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                        <p className="text-red-500 text-sm mt-1 whitespace-pre-line">{errors.password}</p>
                     )}
                 </div>
+
                 <button 
                     type="submit" 
-                    className={`m-8 border p-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full py-2 px-4 rounded-md font-medium ${
+                        isSubmitting 
+                            ? 'bg-gray-400 cursor-not-allowed' 
+                            : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    } text-white transition duration-200`}
                     disabled={isSubmitting}
-                    onClick={handleClick}
                 >
                     {isSubmitting ? 'ログイン中...' : 'ログイン'}
                 </button>

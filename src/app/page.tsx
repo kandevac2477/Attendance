@@ -5,12 +5,12 @@
 import { useState, useEffect } from 'react'
 import TimeClock from '@/components/TimeClock';
 import Dashboard from "@/components/DashBord";
-import { User, ApiResponse } from './lib/types'
+import { UserWithoutPassword, ApiResponse } from './lib/types'
 // import PostCreator from '@/components/DBtests'
 
 
 export default function Home() {
-    const [users, setUsers] = useState<User[]>([])
+    const [users, setUsers] = useState<UserWithoutPassword[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
   
@@ -27,7 +27,7 @@ export default function Home() {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         
-        const result: ApiResponse<User[]> = await response.json()
+        const result: ApiResponse<UserWithoutPassword[]> = await response.json()
   
         if (result.error) {
           setError(result.error)
@@ -59,7 +59,7 @@ export default function Home() {
                 {users.length > 0 && (
                     <div className="grid gap-4">
                         {users.map((item) => (
-                            <div key={item.id} className="border p-4 rounded-lg shadow-sm">
+                            <div key={item.id.toString()} className="border p-4 rounded-lg shadow-sm">
                                 <h3 className="font-semibold text-lg">{item.firstName} {item.lastName}</h3>
                                 <p className="text-gray-600">{item.email}</p>
                                 <p className="text-sm text-gray-400">

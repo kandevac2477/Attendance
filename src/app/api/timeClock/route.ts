@@ -1,10 +1,18 @@
-import { supabase } from '../../lib/supabaseClient'
+import { supabase } from '@/app/lib/supabaseClient'
 // import { AttendanceRecord } from '@/lib/types'
 import { NextRequest } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await request.json()
+    
+    // Supabaseクライアントのnullチェック
+    if (!supabase) {
+      return Response.json(
+        { error: 'Supabase設定エラー' },
+        { status: 500 }
+      )
+    }
     
     // Supabaseにデータを挿入
     const { data, error } = await supabase
@@ -53,6 +61,14 @@ export async function POST(request: NextRequest) {
 // データ取得用のGETメソッド
 export async function GET() {
   try {
+    // Supabaseクライアントのnullチェック
+    if (!supabase) {
+      return Response.json(
+        { error: 'Supabase設定エラー' },
+        { status: 500 }
+      )
+    }
+    
     const { data, error } = await supabase
       .from('AttendanceRecord')
       .select('*')

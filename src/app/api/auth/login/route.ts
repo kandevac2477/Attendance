@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import prisma from '@/app/lib/prisma';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 // サーバー側バリデーションスキーマ
 const loginSchema = z.object({
@@ -26,23 +31,74 @@ export async function POST(request: NextRequest) {
     
         const { email, password } = validationResult.data;
     
-        // ここで実際の認証処理を実装
-        // 例: データベースでのユーザー検証、パスワードハッシュ比較など
-    
-        // 仮の認証処理（実際の実装では適切な認証ライブラリを使用）
-        if (email === 'test@example.com' && password === 'password123') {
-            return NextResponse.json(
-                { message: 'ログインに成功しました' },
-                { status: 200 }
-            );
-        } else {
+        // データベースからユーザーを検索
+        const user = await prisma.user.findFirst({
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                password: true,
+                firstName: true,
+                lastName: true,
+                companyCode: true,
+            }
+        });
+
+        if (!user) {
             return NextResponse.json(
                 { message: 'メールアドレスまたはパスワードが正しくありません' },
                 { status: 401 }
             );
         }
+
+        // パスワードの比較
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        
+        if (!isValidPassword) {
+            return NextResponse.json(
+                { message: 'メールアドレスまたはパスワードが正しくありません' },
+                { status: 401 }
+            );
+        }
+
+        // JWTトークンを生成
+        const token = jwt.sign(
+            { 
+                userId: user.id,
+                email: user.email,
+                companyCode: user.companyCode 
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // レスポンスを作成してクッキーにトークンを設定
+        const response = NextResponse.json(
+            { 
+                message: 'ログインに成功しました',
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    companyCode: user.companyCode
+                }
+            },
+            { status: 200 }
+        );
+
+        // HttpOnlyクッキーにトークンを設定
+        response.cookies.set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 // 24時間
+        });
+
+        return response;
     
     } catch (error) {
+        console.error('Login error:', error);
         return NextResponse.json(
             { message: 'サーバーエラーが発生しました' },
             { status: 500 }

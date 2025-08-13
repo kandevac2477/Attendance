@@ -40,10 +40,27 @@ model Pb_Test {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model User {
   id               BigInt             @id @default(autoincrement())
-  userName         String?            @db.VarChar
-  email            String?            @db.VarChar
-  password         String?            @db.VarChar
-  created          DateTime           @default(now()) @db.Timestamptz(6)
-  affiliation      Int?
+  firstName        String             @db.VarChar
+  email            String             @db.VarChar
+  password         String             @db.VarChar
+  createdDate      DateTime           @default(now()) @db.Timestamptz(6)
+  affiliationFlg   Int
+  lastName         String             @db.VarChar
+  companyCode      String             @db.VarChar
+  joiningDate      DateTime           @db.Date
+  retirementDate   DateTime?          @db.Date
   AttendanceRecord AttendanceRecord[]
+  PaidLeave        PaidLeave?
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model PaidLeave {
+  userid        BigInt    @id @unique
+  grantedDate   DateTime  @db.Date
+  remainingDays Int
+  nextGrantDays Int
+  nextGrantDate DateTime  @db.Date
+  updateDate    DateTime  @default(now()) @db.Timestamp(6)
+  approvalDate  DateTime? @default(now()) @db.Timestamp(6)
+  User          User      @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

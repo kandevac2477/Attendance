@@ -32,3 +32,16 @@ git push origin main
 ==============*/
 http://localhost:3000
 
+/*==============
+　supabaseのテーブル変更をPrismaに反映させる
+==============*/
+npx prisma db pull
+npx prisma generate
+
+/*==============
+　schema.prismaのテーブル変更をPrismaに反映させる
+（直接ファイルないを変更した場合）
+==============*/
+npx prisma migrate dev --name your_migration_name 
+# --name でマイグレーション名を指定（例: add_users_table）
+npx prisma generate

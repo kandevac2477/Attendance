@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # アプリケーションがリッスンするポートを公開
-EXPOSE 3000
+EXPOSE 3004
 
 # Next.jsアプリケーションを起動するコマンド
 CMD ["npm", "start"]

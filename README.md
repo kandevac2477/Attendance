@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## アプリ名：勤怠管理アプリ
+URL：[http://localhost:3004](http://localhost:3004)
+※開発環境（未リリース）のため、リポジトリをクローン後、ローカル環境で上記URLにアクセスしてください。
 
-## Getting Started
+### 概要・背景
+NFC技術と連携した勤怠管理アプリは多く存在しますが、
+スマートフォン本体やスマートウォッチと連携して打刻できる仕組みを実現したいと考え、本アプリを開発しました。
+また、勤怠打刻と同時にオフィスの開錠を行える仕組みを導入することで、より正確な勤怠打刻を実現できると考えています。
 
-First, run the development server:
+### 主な機能一覧
+- 勤怠打刻
+- ダッシュボード
+- シフト管理
+- 休暇・勤怠修正申請
+- ユーザー登録・認証
+※現在は打刻機能を中心に開発を進めています
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 技術スタック
+- フロントエンド: Next.js（App Router）、React
+- バックエンド/DB: Prisma、Supabase
+- その他:Docker
 
-Open [http://localhost:3004](http://localhost:3004) with your browser to see the result.
+### ローカルでの起動手順
+npm install → 環境変数設定 → DB マイグレーション → npm run dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 学んだこと・こだわり
+- バックエンド開発は初めてだったため、SupabaseとPrismaを用いたデータベース連携やDockerによる開発環境構築を経験しました。  
+　特にSupabaseのAPI接続とDocker環境の構築では数日試行錯誤しながら設定を行い、バックエンド開発の基本的な流れを理解することができました。
+- UI/UXはできるだけシンプルで直感的に操作できる設計を意識しています。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 現在実装中
+- 勤怠打刻機能
+- ユーザー認証
+- データベース
 
-## Learn More
+### 主なテーブル
+- User：ユーザー情報を管理
+- AttendanceRecord：勤怠打刻（出勤・退勤時間）
+- Shifts：シフト情報
+- Leave_requests：休日申請
 
-To learn more about Next.js, take a look at the following resources:
+※現在は打刻機能に必要なテーブルから実装を進めています。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 今後の予定
+まずは勤怠打刻機能のみでリリースできる状態を目指しています。
+デプロイはNext.jsとの親和性が高いVercelを使用する予定です。
+その後、以下の機能を順次追加予定です。
+- 勤怠・シフト申請機能
+- Bluetooth認証機能  
+  Bluetooth認証を採用した理由は、スマートフォンやスマートウォッチではNFC認証後のデータ取得・登録ができない端末が存在する可能性があるためです。
